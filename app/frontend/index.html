@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Startup App</title>
+</head>
+<body>
+  <h1>Frontend is running 🚀</h1>
+  <button onclick="callAPI()">Call Backend</button>
+  <p id="response"></p>
+
+  <script>
+    async function callAPI() {
+      const res = await fetch("http://localhost:3000/api");
+      const data = await res.json();
+      document.getElementById("response").innerText = data.message;
+    }
+  </script>
+</body>
+</html>
