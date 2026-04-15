@@ -44,9 +44,9 @@ jobs:
       # 7. Verify containers run (VERY IMPORTANT)
       - name: Run backend container test
         run: |
-          docker run -d -p 3000:3000 --name test-backend travel-backend
+          docker run -d -p 3001:3000 --name test-backend travel-backend
           sleep 5
-          curl http://localhost:3000
+          curl http://localhost:3001
 
       # 8. Cleanup containers
       - name: Cleanup
