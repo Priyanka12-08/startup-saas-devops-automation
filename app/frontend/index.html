@@ -1,19 +1,231 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Startup App</title>
-</head>
-<body>
-  <h1>Frontend is running 🚀</h1>
-  <button onclick="callAPI()">Call Backend</button>
-  <p id="response"></p>
+  <meta charset="UTF-8" />
+  <title>TravelOps AI - Smart Travel Planner</title>
 
-  <script>
-    async function callAPI() {
-      const res = await fetch("http://localhost:3000/api");
-      const data = await res.json();
-      document.getElementById("response").innerText = data.message;
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: white;
     }
-  </script>
+
+    header {
+      background: #1e293b;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    select, button, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      background: #38bdf8;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+
+    .results {
+      margin-top: 10px;
+    }
+
+    .place {
+      background: #0f172a;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    /* Chatbot */
+    .chatbox {
+      height: 300px;
+      overflow-y: auto;
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .chat-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+}
+
+.chat-input button {
+  width: 100px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #38bdf8;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background: #0ea5e9;
+}
+  </style>
+</head>
+
+<body>
+
+<header>
+  ✈️ TravelOps AI - Smart Travel Recommendation Platform
+</header>
+
+<div class="container">
+
+  <!-- LEFT PANEL -->
+  <div class="card">
+
+    <h2>🎯 Travel Preferences</h2>
+
+    <label>Weather</label>
+    <select id="weather">
+      <option value="warm">Warm</option>
+      <option value="cold">Cold</option>
+      <option value="hot">Hot</option>
+    </select>
+
+    <label>Budget</label>
+    <select id="budget">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <label>Flight Cost</label>
+    <select id="flight">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <button onclick="getRecommendations()">Get Recommendations</button>
+
+    <h3>🌍 Suggested Destinations</h3>
+    <div id="results" class="results"></div>
+
+  </div>
+
+  <!-- RIGHT PANEL (CHATBOT) -->
+  <div class="card">
+
+    <h2>🤖 Travel Assistant Chatbot</h2>
+
+    <div id="chatbox" class="chatbox"></div>
+
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Ask me about travel..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // ----------------------------
+  // Travel Recommendations API
+  // ----------------------------
+  async function getRecommendations() {
+    const weather = document.getElementById("weather").value;
+    const budget = document.getElementById("budget").value;
+    const flight = document.getElementById("flight").value;
+
+    const res = await fetch("http://localhost:3000/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ weather, budget, flight })
+    });
+
+    const data = await res.json();
+
+    const resultsDiv = document.getElementById("results");
+    resultsDiv.innerHTML = "";
+
+    if (data.recommendations.length === 0) {
+      resultsDiv.innerHTML = "<p>No destinations found 😢</p>";
+      return;
+    }
+
+    data.recommendations.forEach(place => {
+      const div = document.createElement("div");
+      div.className = "place";
+      div.innerHTML = `🌍 <b>${place.city}</b><br>
+        Weather: ${place.weather} | Budget: ${place.budget} | Flight: ${place.flight}`;
+      resultsDiv.appendChild(div);
+    });
+  }
+
+  // ----------------------------
+  // Simple Chatbot Logic (Mock AI)
+  // ----------------------------
+  async function sendMessage() {
+  const input = document.getElementById("chatInput");
+  const chatbox = document.getElementById("chatbox");
+
+  const userMsg = input.value;
+  if (!userMsg) return;
+
+  // show user message
+  chatbox.innerHTML += `<p class="user">🧑 You: ${userMsg}</p>`;
+
+  // call backend API
+  const res = await fetch("http://localhost:3000/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: userMsg })
+  });
+
+  const data = await res.json();
+
+  // show bot response
+  chatbox.innerHTML += `<p class="bot">🤖 Bot: ${data.reply}</p>`;
+
+  input.value = "";
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+</script>
+
 </body>
 </html>

@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    container_name: travel-backend
+    ports:
+      - "3000:3000"
+    networks:
+      - travel-net
+  
+  frontend:
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - travel-net
+
+networks:
+  travel-net:
+     driver: bridge
+     

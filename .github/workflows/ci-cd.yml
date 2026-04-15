@@ -1,0 +1,33 @@
+name: TravelOps CI/CD Pipeline
+
+on:
+  push:
+    branches:
+       -main
+jobs:
+  build:
+    
+     runs-on: ubuntu-layesy
+     steps:
+       - name: Checkout code
+         uses: actions/checkout@v3
+
+      # ----------------------------
+      # Backend Build
+      # ----------------------------
+       - name: Build Backend Docker Image
+         run: |
+          docker build -t travel-backend ./app/backend
+
+      # ----------------------------
+      # Frontend Build
+      # ----------------------------
+       - name: Build Frontend Docker Image
+         run: |
+          docker build -t travel-frontend ./app/frontend
+
+      # ----------------------------
+      # Success message
+      # ----------------------------
+       - name: Pipeline Complete
+         run: echo "Build completed successfully 🚀"
