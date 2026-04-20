@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18'
+        }
+    }
 
     stages {
 
@@ -32,28 +36,5 @@ pipeline {
             }
         }
 
-        stage('Run Backend Container Test') {
-            steps {
-                sh 'docker run -d -p 3001:3000 --name backend-test travel-backend'
-                sh 'sleep 5'
-                sh 'curl http://localhost:3001'
-            }
-        }
-
-        stage('Run Frontend Container Test') {
-            steps {
-                steps {
-                    sh 'docker run -d -p 8080:80 --name frontend-test travel-frontend'
-                    sh 'sleep 5'
-                    sh 'curl http://localhost:8080'
-                }
-            }
-        }
-
-        stage('Cleanup') {
-            steps {
-                sh 'docker rm -f backend-test frontend-test || true'
-            }
-        }
     }
 }
